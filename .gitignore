@@ -1,0 +1,105 @@
+# --------------------------
+# Build / Output
+# --------------------------
+/target/
+/out/
+/build/
+
+# --------------------------
+# IDEs
+# --------------------------
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/.idea_modules/
+/*.ipr
+/*.iws
+/.vscode/
+
+# Eclipse
+/.settings/
+/.project
+/.classpath
+
+# --------------------------
+# OS Files
+# --------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+
+# --------------------------
+# Logs and temp
+# --------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# --------------------------
+# Maven / Gradle
+# --------------------------
+/.mvn/
+/bin/
+/gradle-wrapper.jar
+gradle-app.setting
+gradle-wrapper.properties
+.gradle/
+/build/
+
+# --------------------------
+# Spring Boot
+# --------------------------
+/spring-boot-devtools.properties
+/spring-boot-devtools.jar
+/reports/
+/sessions/
+*.h2.db
+
+# --------------------------
+# Environment / Secrets
+# --------------------------
+.env
+.env.*
+*.properties
+*.yml
+*.yaml
+
+# Exemplo: não vazar credenciais da IA
+apikeys.json
+config.json
+credentials.json
+
+# --------------------------
+# IA / Machine Learning
+# --------------------------
+# modelos treinados, cache, dados pesados
+/models/
+/data/
+/output/
+/checkpoints/
+/cache/
+/tmp/
+
+# --------------------------
+# Node / Front-end (caso use React, Angular etc.)
+# --------------------------
+/node_modules/
+/dist/
+/build/
+
+# --------------------------
+# Misc
+# --------------------------
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.gz
+*.iml
