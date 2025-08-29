@@ -1,7 +1,6 @@
 package dev.gabrielmoreira.ResumoAI.Controller;
 
 import dev.gabrielmoreira.ResumoAI.DTO.BookItemDTO;
-import dev.gabrielmoreira.ResumoAI.Model.Bookitem;
 import dev.gabrielmoreira.ResumoAI.Service.BookItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(name = "/book")
+@RequestMapping("/book")
 public class BookItemController {
+
 
     private final BookItemService bookItemService;
 
@@ -28,8 +28,9 @@ public class BookItemController {
 
     //GET
     @GetMapping("/listar")
-    public List<BookItemDTO> listar(){
-        return bookItemService.verLivros();
+    public ResponseEntity<List<BookItemDTO>> listar(){
+        List<BookItemDTO> lista = bookItemService.verLivros();
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/listar/{id}")
@@ -40,7 +41,7 @@ public class BookItemController {
             return ResponseEntity.status(HttpStatus.OK).body(ver);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     //UPDATE
@@ -52,7 +53,7 @@ public class BookItemController {
             return ResponseEntity.ok(livroAlterado);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     //DELETE
@@ -64,7 +65,7 @@ public class BookItemController {
             bookItemService.deletarLivroPorId(id);
             return  ResponseEntity.status(HttpStatus.OK).body("Livro Deletado com sucesso");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O id não existe!");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O id não existe!");
     }
 
 }
