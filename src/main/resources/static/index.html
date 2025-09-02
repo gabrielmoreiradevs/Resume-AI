@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumoAI - Sua Biblioteca Inteligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+        }
+        .ai-result-content p {
+            margin-bottom: 1rem;
+        }
+        .ai-result-content strong {
+            color: #6366f1; /* text-indigo-500 */
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* bg-gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5; /* bg-indigo-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1; /* bg-indigo-500 */
+        }
+        .spinner {
+            border-top-color: #6366f1;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .tab-btn.active {
+            background-color: #4f46e5; /* bg-indigo-600 */
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+<header class="bg-gray-800 shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+        <h1 class="text-2xl font-bold text-white">📚 ResumoAI <span class="text-indigo-400">| Sua Biblioteca Inteligente</span></h1>
+        <p class="text-sm text-gray-400">Gerencie seus livros e obtenha resumos e sugestões com Inteligência Artificial.</p>
+    </div>
+</header>
+
+<main class="container mx-auto px-6 py-8">
+    <!-- Navegação por Abas -->
+    <div class="mb-6 border-b border-gray-700">
+        <nav class="flex space-x-4" aria-label="Tabs">
+            <button id="tab-estante" class="tab-btn active px-4 py-2 text-lg font-medium rounded-t-md text-gray-300 hover:bg-gray-700 transition">Minha Estante</button>
+            <button id="tab-analise" class="tab-btn px-4 py-2 text-lg font-medium rounded-t-md text-gray-300 hover:bg-gray-700 transition">Análise IA</button>
+        </nav>
+    </div>
+
+    <!-- Conteúdo das Abas -->
+    <div>
+        <!-- Aba 1: Minha Estante -->
+        <div id="content-estante" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Formulário para Adicionar Livro -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                    <h3 class="text-xl font-medium text-indigo-400 mb-4">Adicionar Novo Livro</h3>
+                    <form id="add-book-form" class="space-y-4">
+                        <input type="text" id="titulo" placeholder="Título do Livro" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                        <input type="text" id="autor" placeholder="Autor" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                        <input type="text" id="genero" placeholder="Gênero" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                        <input type="text" id="editora" placeholder="Editora" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 shadow-md">
+                            Adicionar à Estante
+                        </button>
+                    </form>
+                </div>
+                <!-- Lista de Livros -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                    <h3 class="text-xl font-medium text-indigo-400 mb-4">Livros Cadastrados</h3>
+                    <div id="book-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                        <!-- Livros serão inseridos aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba 2: Análise IA -->
+        <div id="content-analise" class="tab-content hidden">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-4xl mx-auto">
+                <h2 class="text-2xl font-semibold mb-6 text-center">Análise da Inteligência Artificial</h2>
+                <div class="text-center mb-6">
+                    <button id="generate-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 shadow-lg text-lg">
+                        Gerar Resumos e Sugestões
+                    </button>
+                </div>
+                <div id="ai-result" class="bg-gray-900 p-4 rounded-md min-h-[40vh] max-h-[60vh] overflow-y-auto prose prose-invert prose-p:text-gray-300">
+                    <p class="text-gray-400 text-center pt-8">Clique no botão para que a IA analise sua estante e gere resumos e sugestões de leitura baseadas no seu gosto!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal de Edição -->
+<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-indigo-400">Editar Livro</h2>
+        <form id="edit-book-form" class="space-y-4">
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-titulo" placeholder="Título" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+            <input type="text" id="edit-autor" placeholder="Autor" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+            <input type="text" id="edit-genero" placeholder="Gênero" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+            <input type="text" id="edit-editora" placeholder="Editora" required class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+            <div class="flex gap-4 mt-6">
+                <button type="button" id="cancel-edit-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancelar</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE_URL = window.location.origin;
+
+        const addBookForm = document.getElementById('add-book-form');
+        const bookList = document.getElementById('book-list');
+        const generateBtn = document.getElementById('generate-btn');
+        const aiResult = document.getElementById('ai-result');
+        const editModal = document.getElementById('edit-modal');
+        const editBookForm = document.getElementById('edit-book-form');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+        // Abas
+        const tabEstante = document.getElementById('tab-estante');
+        const tabAnalise = document.getElementById('tab-analise');
+        const contentEstante = document.getElementById('content-estante');
+        const contentAnalise = document.getElementById('content-analise');
+
+        const fetchAndRenderBooks = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/book/listar`);
+                if (!response.ok) throw new Error('Erro ao buscar livros.');
+                const books = await response.json();
+                renderBooks(books);
+            } catch (error) {
+                console.error(error);
+                bookList.innerHTML = `<p class="text-red-400">Não foi possível carregar os livros.</p>`;
+            }
+        };
+
+        const renderBooks = (books) => {
+            bookList.innerHTML = '';
+            if (books.length === 0) {
+                bookList.innerHTML = `<p class="text-gray-400 text-center">Sua estante está vazia. Adicione um livro!</p>`;
+                return;
+            }
+            books.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.className = 'bg-gray-700 p-3 rounded-md flex justify-between items-center';
+                bookElement.innerHTML = `
+                        <div>
+                            <p class="font-semibold">${book.titulo}</p>
+                            <p class="text-sm text-gray-400">${book.autor}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="edit-btn text-blue-400 hover:text-blue-300 text-sm" data-id="${book.id}">Editar</button>
+                            <button class="delete-btn text-red-400 hover:text-red-300 text-sm" data-id="${book.id}">Excluir</button>
+                        </div>
+                    `;
+                bookList.appendChild(bookElement);
+            });
+        };
+
+        const addBook = async (event) => {
+            event.preventDefault();
+            const book = {
+                titulo: document.getElementById('titulo').value,
+                autor: document.getElementById('autor').value,
+                genero: document.getElementById('genero').value,
+                editora: document.getElementById('editora').value,
+            };
+            try {
+                const response = await fetch(`${API_BASE_URL}/book/criar`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(book)
+                });
+                if (!response.ok) throw new Error('Erro ao adicionar livro.');
+                addBookForm.reset();
+                fetchAndRenderBooks();
+            } catch (error) { console.error(error); }
+        };
+
+        const deleteBook = async (id) => {
+            if (window.prompt("Para confirmar a exclusão, digite 'sim'.") !== 'sim') return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/book/deletar/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Erro ao deletar livro.');
+                fetchAndRenderBooks();
+            } catch (error) { console.error(error); }
+        };
+
+        const showEditModal = async (id) => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/book/listar/${id}`);
+                if (!response.ok) throw new Error('Livro não encontrado.');
+                const book = await response.json();
+                document.getElementById('edit-id').value = book.id;
+                document.getElementById('edit-titulo').value = book.titulo;
+                document.getElementById('edit-autor').value = book.autor;
+                document.getElementById('edit-genero').value = book.genero;
+                document.getElementById('edit-editora').value = book.editora;
+                editModal.classList.remove('hidden');
+            } catch (error) { console.error(error); }
+        };
+
+        const hideEditModal = () => editModal.classList.add('hidden');
+
+        const updateBook = async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const book = {
+                titulo: document.getElementById('edit-titulo').value,
+                autor: document.getElementById('edit-autor').value,
+                genero: document.getElementById('edit-genero').value,
+                editora: document.getElementById('edit-editora').value,
+            };
+            try {
+                const response = await fetch(`${API_BASE_URL}/book/alterar/${id}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(book)
+                });
+                if (!response.ok) throw new Error('Erro ao atualizar livro.');
+                hideEditModal();
+                fetchAndRenderBooks();
+            } catch (error) { console.error(error); }
+        };
+
+        const showLoading = (element) => {
+            element.innerHTML = `
+                    <div class="flex justify-center items-center h-full">
+                        <div class="spinner h-12 w-12 rounded-full border-4 border-t-4 border-gray-600"></div>
+                        <p class="ml-4 text-gray-400">A IA está lendo sua estante...</p>
+                    </div>`;
+        };
+
+        const generateAnalysis = async () => {
+            showLoading(aiResult);
+            try {
+                const response = await fetch(`${API_BASE_URL}/generate`);
+                if (!response.ok) throw new Error('Erro ao gerar análise.');
+                let textResult = await response.text();
+
+                let htmlResult = textResult.replace(/\n/g, '<br>');
+                htmlResult = htmlResult.replace(/•\s/g, '<br><strong>• </strong>');
+                htmlResult = htmlResult.replace(/Sugestões:/g, '<br><strong class="text-emerald-400">Sugestões:</strong>');
+
+                aiResult.innerHTML = `<div class="ai-result-content p-2">${htmlResult}</div>`;
+            } catch (error) {
+                console.error(error);
+                aiResult.innerHTML = `<p class="text-red-400 text-center">Não foi possível gerar a análise. Verifique se há livros na estante.</p>`;
+            }
+        };
+
+        const switchTab = (tabName) => {
+            if (tabName === 'estante') {
+                contentEstante.classList.remove('hidden');
+                contentAnalise.classList.add('hidden');
+                tabEstante.classList.add('active');
+                tabAnalise.classList.remove('active');
+            } else if (tabName === 'analise') {
+                contentEstante.classList.add('hidden');
+                contentAnalise.classList.remove('hidden');
+                tabEstante.classList.remove('active');
+                tabAnalise.classList.add('active');
+            }
+        };
+
+        addBookForm.addEventListener('submit', addBook);
+        generateBtn.addEventListener('click', generateAnalysis);
+
+        bookList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) deleteBook(e.target.dataset.id);
+            if (e.target.classList.contains('edit-btn')) showEditModal(e.target.dataset.id);
+        });
+
+        cancelEditBtn.addEventListener('click', hideEditModal);
+        editBookForm.addEventListener('submit', updateBook);
+
+        tabEstante.addEventListener('click', () => switchTab('estante'));
+        tabAnalise.addEventListener('click', () => switchTab('analise'));
+
+        fetchAndRenderBooks();
+    });
+</script>
+</body>
+</html>
+

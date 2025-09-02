@@ -1,24 +1,34 @@
 package dev.gabrielmoreira.ResumoAI.Service;
 
-import dev.gabrielmoreira.ResumoAI.config.WebClientConfig;
-import org.springframework.http.HttpHeaders;
+import com.fasterxml.jackson.databind.JsonNode;
+import dev.gabrielmoreira.ResumoAI.DTO.BookItemDTO;
+import dev.gabrielmoreira.ResumoAI.Model.Bookitem;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatGPTService {
 
     private final WebClient client;
-    private String apikey=System.getenv("API-KEY");
+    private final String apikey=System.getenv("API-KEY");
 
-    public ChatGPTService(WebClient client, WebClientConfig config) {
+    public ChatGPTService(WebClient client) {
         this.client = client;
     }
 
-    public Mono<String> generatRecipe() {
-        String prompt = "Agora você é um bibliotecário virtual especializado em literatura e estudos acadêmicos. Sua função é me fornecer resumos detalhados, leituras complementares e informações contextuais sobre livros que eu solicitar. Sempre que eu informar o título de um livro, você deverá fornecer um resumo conciso e completo da obra, destacando os pontos principais, sugerir leituras complementares ou referências relacionadas ao tema do livro, indicar conceitos importantes ou ideias centrais que devem ser compreendidas para aprofundar o estudo, e sempre manter um tom educativo, claro e acessível, como se estivesse me guiando pessoalmente na biblioteca. Se algum livro não tiver informações suficientes, explique isso e indique fontes alternativas ou obras semelhantes que possam ajudar no estudo.";
+    public Mono<String> generateSummariesAndSuggestions(List<BookItemDTO> bookitems) {
+
+        String livros = bookitems.stream()
+                .map(item-> String.format("• %s (por %s) [%s]", item.getTitulo(), item.getAutor(), item.getGenero()))
+                .collect(Collectors.joining("\n"));
+        String prompt =  "A seguir está uma lista dos meus livros. Para cada um, forneça um resumo curto de uma ou duas frases. " +
+                "Depois, com base nos gêneros e autores da lista, sugira 3 novos livros que eu poderia gostar, explicando o porquê da sugestão.\n\n" +
+                "Meus Livros:\n" + livros;
 
         return client.post()
                 .header("Content-Type", "application/json")
@@ -28,7 +38,12 @@ public class ChatGPTService {
                         "input", prompt
                 ))
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    JsonNode textNode = json.path("output").get(0).path("content").get(0).path("text");
+                    return textNode.isMissingNode() ? "O modelo não retornou nenhuma resposta." : textNode.asText();
+                });
+
     }
 
 }
