@@ -34,6 +34,11 @@ public class BookItemController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/saude")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Service is up");
+    }
+
     @GetMapping("/listar/{id}")
     public ResponseEntity<BookItemDTO> listarPorId(@PathVariable Long id){
         BookItemDTO ver = bookItemService.verLivrosPorId(id);
