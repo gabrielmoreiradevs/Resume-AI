@@ -78,6 +78,26 @@
 
 	<build>
 		<plugins>
+			<!--
+            1. PLUGIN DE RECURSOS
+            É ESTE plugin que lida com o application.properties.
+            A configuração para não filtrar o arquivo vai aqui.
+            -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>properties</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+
+			<!--
+            2. PLUGIN DO COMPILADOR
+            Este plugin compila seu código Java. A configuração do Lombok continua aqui.
+            -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -86,10 +106,13 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<!-- A versão do Lombok é gerenciada pelo Spring, não precisa colocar aqui -->
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+			<!-- 3. PLUGIN DO SPRING BOOT (Este já estava correto) -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
